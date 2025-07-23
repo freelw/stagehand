@@ -6,6 +6,12 @@
  */
 import { Stagehand } from "@browserbasehq/stagehand";
 import StagehandConfig from "../stagehand.config";
+import OpenAI from "openai";
+import { CustomOpenAIClient } from "./external_clients/customOpenAI";
+import dotenv from "dotenv";
+dotenv.config();
+
+console.log("process.env.OPENAI_API_KEY", process.env.OPENAI_API_KEY);
 
 async function example(stagehand: Stagehand) {
   /**
@@ -19,6 +25,13 @@ async function example(stagehand: Stagehand) {
 (async () => {
   const stagehand = new Stagehand({
     ...StagehandConfig,
+    llmClient: new CustomOpenAIClient({
+      modelName: "deepseek-chat",
+      client: new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+        baseURL: "https://api.deepseek.com/v1",
+      }),
+    }),
   });
   await stagehand.init();
   await example(stagehand);
